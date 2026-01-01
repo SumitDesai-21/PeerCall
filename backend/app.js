@@ -5,6 +5,7 @@ import mongoose, { mongo } from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectToSocket from "./src/controllers/socketManager.js";
+import userRoutes from './src/routes/users.routes.js';
 
 dotenv.config();
 
@@ -22,6 +23,10 @@ const server = createServer(app);
 Attach Socket.io to the same server i.e shares port with Express
 This allows both HTTP requests and WebSocket connections on same port */
 const io = connectToSocket(server);
+
+
+// use routes 
+app.use('/api/users', userRoutes);
 
 
 const start = async () => {
