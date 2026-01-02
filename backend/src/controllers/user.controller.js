@@ -1,21 +1,21 @@
 import { User } from "../models/user.model.js";
 import httpStatus from "http-status";
 import bcrypt, { hash } from "bcrypt";
-import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 // register controller
 const register = async (req, res) => {
   const { name, username, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
+    const userExists = await User.findOne({ username });
+    if (userExists) {
       return res
         .status(httpStatus.FOUND)
         .json({ message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    // by default salting = 10
+
     const newUser = new User({
       name: name,
       username: username,
@@ -46,12 +46,12 @@ const login = async (req, res) => {
 
     // else if user exists
     // compare login password & actual password matches or not
-    if(bcrypt.compare(password, user.password)){
-        let token = crypto.randomBytes(20).toString("hex");
-        user.token = token;
-        await user.save();
-
+    if(await bcrypt.compare(password, user.password)){
+        const token = jwt.sign({ username: username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d'});
         return res.status(httpStatus.OK).json({token: token});
+    }
+    else{
+        return res.status(httpStatus.UNAUTHORIZED).json({message: "Invalid credentials"});
     }
   } catch (error) {
     return res.status(500).json({message: `Something went wrong ${error}`}); // server error
