@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #1a202c;
+  background-color: #fcfcfd;
+}
+
+.landingPageContainer {
+  min-height: 100vh;
+  background: url("./assets/bgm4.jpg") center/cover no-repeat fixed;
+}
+
+/* NAVBAR: Added horizontal border */
+nav {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Simple horizontal line */
+}
+
+.navHeader h2 {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+}
+
+.navHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logoMark {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.navHeader h2 span { color: #2563eb; }
+
+.navlist {
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+/* Increased Link Text */
+.navLink {
+  font-size: 1rem; 
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: 0.2s;
+  text-decoration: none;
+}
+
+.navLink:hover { color: #2563eb; }
+
+/* Increased Button Text */
+.loginBtn {
+  background: transparent;
+  border: 2px solid #2563eb;
+  color: #2563eb;
+  font-size: 1rem; 
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.7rem 1.8rem;
+  border-radius: 50px;
+  transition: 0.3s;
+}
+
+.loginBtn:hover {
+  background: rgba(37, 99, 235, 0.05);
+  transform: translateY(-1px);
+}
+
+.landingMainContainer {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 5rem 2rem;
+  gap: 2rem;
+}
+
+.heroContent { flex: 1.2; }
+
+.heroTitle {
+  font-size: 3.5rem;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-bottom: 1.5rem;
+}
+
+.accent {
+  background: linear-gradient(to right, #2563eb, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heroSubtitle {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: #475569;
+  margin-bottom: 3rem;
+  max-width: 480px;
+}
+
+/* Increased Hero Button Text */
+.btn {
+  display: inline-block;
+  background: #0f172a;
+  color: white;
+  padding: 1.1rem 2.8rem;
+  border-radius: 50px; 
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 700;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  background: #2563eb;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+}
+
+.heroImage {
+  flex: 0.8;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.heroImage img {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 24px;
+  animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
