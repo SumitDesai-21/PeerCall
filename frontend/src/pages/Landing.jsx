@@ -30,7 +30,7 @@ const Landing = () => {
             Bridging the gap between you and your loved ones, one call at a time.
           </p>
           <div className="ctaGroup">
-            <Link className='btn' to={'/'}>Get Started</Link>
+            <Link className='btn' to={'/auth'}>Get Started</Link>
           </div>
         </div>
         <div className="heroImage">
