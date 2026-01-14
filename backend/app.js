@@ -1,7 +1,7 @@
 import express from "express";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectToSocket from "./src/controllers/socketManager.js";
@@ -13,7 +13,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true})); 
-let port = process.env.PORT || 3000;
+let port = process.env.PORT || 8080;
 /*
 Create HTTP server with Express inside it
 Socket.io needs the raw HTTP server to attach WebSocket functionality */

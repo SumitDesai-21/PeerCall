@@ -1,44 +1,44 @@
 import { User } from "../models/user.model.js";
 import httpStatus from "http-status";
-import bcrypt, { hash } from "bcrypt";
+import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 // register controller
 const register = async (req, res) => {
-  const { name, username, password } = req.body;
+  const { name, email, password } = req.body;
 
   try {
-    const userExists = await User.findOne({ username });
+    const userExists = await User.findOne({ email });
     if (userExists) {
       return res
         .status(httpStatus.FOUND)
-        .json({ message: "User already exists" });
+        .json({ message: "Email already registered" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
       name: name,
-      username: username,
+      email: email,
       password: hashedPassword,
     });
 
     await newUser.save();
 
-    res.status(httpStatus.CREATED).json({ message: "User registered" });
+    res.status(httpStatus.CREATED).json({ message: "User registered successfully" });
   } catch (error) {
-    res.json({ message: `Something went wrong ${error}` });
+    res.status(500).json({ message: `Something went wrong ${error}` });
   }
 };
 
 // login controller
 const login = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ message: "Plese provide your details." });
+  if (!email || !password) {
+    return res.status(400).json({ message: "Please provide your email and password." });
   }
   try {
-    const user = await User.findOne({username}); // find user by username
+    const user = await User.findOne({ email }); // find user by email
 
     if(!user){
         return res.status(httpStatus.NOT_FOUND).json({message: "User not found."});
@@ -47,7 +47,7 @@ const login = async (req, res) => {
     // else if user exists
     // compare login password & actual password matches or not
     if(await bcrypt.compare(password, user.password)){
-        const token = jwt.sign({ username: username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d'});
+        const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d'});
         return res.status(httpStatus.OK).json({token: token});
     }
     else{

@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import { verifyToken } from "../middlewares/auth.middleware.js";
 // this file handles real time features like joining calls, chat, webRTC signaling, leaving calls.
 
 
@@ -12,6 +13,7 @@ const connectToSocket = (server) => {
             methods: ["GET", "POST"]
         }
     });
+    io.use(verifyToken);
 
     io.on("connection", (socket) => {
         console.log("User connected:", socket.id);
@@ -70,7 +72,7 @@ const connectToSocket = (server) => {
 
             delete timeOnline[socket.id];
         });
-    });
+    })
 
     return io;
 };
