@@ -1,6 +1,6 @@
 // setting up context API & creating auth flow
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import httpStatus from 'http-status';
 import axios from "axios";
@@ -13,8 +13,7 @@ const client = axios.create({
 export default AuthContext;
 
 export const AuthProvider = ({ children }) =>{
-    const authContext = useContext(AuthContext);
-    const [userData, setUserData] = useState(authContext);
+    const [userData, setUserData] = useState(null);
     const router = useNavigate();
     
     const handleRegister = async (name, email, password) =>{
