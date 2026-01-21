@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import Landing from './pages/Landing'
 import Authentication from './pages/Authentication'
 import { AuthProvider } from './contexts/AuthContext'
+import VideoMeet from './pages/VideoMeet'
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
           <Routes>
             <Route path='/' element={<Landing />}></Route>
             <Route path='/auth' element={<Authentication />}></Route>
+            <Route path='/:url' element={<VideoMeet/>}></Route>
           </Routes>
         </AuthProvider>
       </BrowserRouter>
