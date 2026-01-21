@@ -1,10 +1,11 @@
 import React from 'react';
-import '../Home.css';
+import '../styles/Home.css';
 import mobileImg from '../assets/mobilecall.png';
 import videoIcon from '../assets/video.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Landing = () => {
+  const navigate = useNavigate();
   return (
     <div className='landingPageContainer'>
       <nav>
@@ -14,8 +15,7 @@ const Landing = () => {
         </div>
         <div className='navlist'>
           <span className="navLink">Join As Guest</span>
-          <span className="navLink">Register</span>
-          <button className='loginBtn'>Login</button>
+          <button onClick={() => navigate('/auth')} className='loginBtn'>Login</button>
         </div>
       </nav>
 
