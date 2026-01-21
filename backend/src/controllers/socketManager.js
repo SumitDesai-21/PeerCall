@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import { verifyToken } from "../middlewares/auth.middleware.js";
-// this file handles real time features like joining calls, chat, webRTC signaling, leaving calls.
+// this file handles real time features like joining calls, chat, webRTC signaling, leaving calls
 
 
 const messages = {};
@@ -37,7 +37,7 @@ const connectToSocket = (server) => {
 
         // WebRTC signaling
         socket.on("signal", (toId, message) => {
-            //sends message to everyone including user.
+            //sends message to everyone including user
             io.to(toId).emit("signal", socket.id, message);
         });
 
