@@ -1,5 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { io } from 'socket.io-client';
+import VideocamIcon from '@mui/icons-material/Videocam'
+import VideocamOffIcon from '@mui/icons-material/VideocamOff'
+import { IconButton, Button, Badge } from '@mui/material';
+import CallEndIcon from '@mui/icons-material/CallEnd'
+import MicIcon from '@mui/icons-material/Mic'
+import MicOffIcon from '@mui/icons-material/MicOff'
+import ScreenShareIcon from '@mui/icons-material/ScreenShare'
+import StopScreenShareIcon from '@mui/icons-material/StopScreenShare'
+import ChatIcon from '@mui/icons-material/Chat'
+
 import '../styles/VideoComponent.css';
 // define URL server
 const server_url = "http://localhost:8080"; // backend server
@@ -94,7 +104,7 @@ const VideoMeet = () => {
       connections[id].addStream(window.localStream)
       connections[id].createOffer().then((description) => {
         connections[id].setLocalDescription(description).then(() => {
-          socketIdRef.current.emit("signal", id, JSON.stringify({ "sdp": connections[id].localDescription }))
+          socketRef.current.emit("signal", id, JSON.stringify({ "sdp": connections[id].localDescription }))
         }).catch(e => console.log(e));
       }).catch(e => console.log(e));
     }
@@ -181,15 +191,17 @@ const VideoMeet = () => {
           if (signal.sdp.type === 'offer') {
             connections[fromId].createAnswer().then((description) => {
               connections[fromId].setLocalDescription(description).then(() => {
-                socketIdRef.current.emit("signal", fromId, JSON.stringify({ "sdp": connections[fromId].localDescription }))
+                socketRef.current.emit("signal", fromId, JSON.stringify({ "sdp": connections[fromId].localDescription }))
               }).catch(e => console.log(e));
             }).catch(e => console.log(e));
           }
         }).catch(e => console.log(e));
       }
       if (signal.ice) {
-        // interactive connectivity establishment
-        connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(e => console.log(e));
+        // add ICE candidate iff remote description is set
+        if (connections[fromId].remoteDescription) {
+          connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(e => console.log(e));
+        }
       }
     }
   }
@@ -217,6 +229,7 @@ const VideoMeet = () => {
       })
 
       socketRef.current.on('user-joined', (id, clients) => {
+        if (!clients) return;
         clients.forEach((socketListId) => {
           // Creating our Peer Connection here
           connections[socketListId] = new RTCPeerConnection(peerConfigConnections);
@@ -230,7 +243,7 @@ const VideoMeet = () => {
             let videoExists = videoRef.current.find(video => video.socketId === socketListId);
 
             if (videoExists) {
-              setVideo(videos => {
+              setVideos(videos => {
                 const updatedVideos = videos.map(video =>
                   video.socketId === socketListId ? { ...video, stream: event.stream } : video
                 )
@@ -247,7 +260,7 @@ const VideoMeet = () => {
               }
 
               setVideos(videos => {
-                const updatedVideos = [...video, newVideo];
+                const updatedVideos = [...videos, newVideo];
                 videoRef.current = updatedVideos;
                 return updatedVideos;
               })
@@ -312,21 +325,59 @@ const VideoMeet = () => {
           <h2>Enter into lobby</h2>
           <br />
           <textarea name="username" id="" value={username}></textarea>
-          <button className='btn' onClick={connect}>Connect</button>
+          <Button variant="contained" onClick={connect}>Connect</Button>
 
           <div>
             <video ref={localVideoRef} autoPlay muted></video>
           </div>
-        </div> : <>
-          <video ref={localVideoRef} autoPlay muted></video>
+        </div> : 
+        <div className='meetVideoContainer'>
+
+          <div className='btnContainers'>
+            <IconButton style={{color: "white"}}>
+              {video ? <VideocamIcon/> : <VideocamOffIcon/>}
+            </IconButton>
+            <IconButton style={{color: "red"}}>
+              <CallEndIcon />
+            </IconButton>
+            <IconButton style={{color: "white"}}>
+              {audio ? <MicIcon/>: <MicOffIcon/>}
+            </IconButton>
+
+            {screenAvailable ? 
+              <IconButton style={{color:"white"}}>
+                {screen ? <ScreenShareIcon/> : <StopScreenShareIcon/>}
+              </IconButton>
+              : <></>
+            }
+
+            <Badge badgeContent={newMessages} max={999} color='secondary'>
+              <IconButton style={{color: "white"}}>
+              <ChatIcon/>
+            </IconButton>
+            </Badge>
+          </div>
+
+          <video className='meetUserVideo' ref={localVideoRef} autoPlay muted></video>
           
           {videos.map((video)=>(
-            <div key={video.socketId}>
-              
+            <div className='conferenceView' key={video.socketId}>
+              <h2>{video.socketId}</h2>
+
+              <video
+                data-socket={video.socketId}
+                ref={ref=>{
+                  if(ref && video.stream){
+                    ref.srcObject = video.stream;
+                  }
+                }}
+                autoPlay
+                >
+
+              </video>
             </div>
           ))}
-        </>
-
+        </div>
       }
     </div>
   )

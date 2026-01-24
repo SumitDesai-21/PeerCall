@@ -2,12 +2,31 @@
     padding: 0;
     margin: 0;
 }
-.btn{
-    background-color: #2563eb;
-    width: 50px;
-    height: 25px;
-    display: flex;
+
+.meetVideoContainer{
+    position: relative;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.922);
+}
+
+.meetVideoContainer > .meetUserVideo{
+    position: absolute;
+    bottom: 10vh;
+    height: 30vh;
+    width: auto;
+    right: 0;
+    border-radius: 20px;
+}
+
+.btnContainers{
+    position: absolute;
+    width: 100vw;
+    bottom: 0;
     text-align: center;
-    display: flex;
-    justify-content: center; align-items: center;
+}
+.btnContainers svg {
+    font-size: 2.5rem;
+}
+.conferenceView{
+
 }
