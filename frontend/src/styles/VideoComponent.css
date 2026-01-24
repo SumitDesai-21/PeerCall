@@ -1,32 +1,67 @@
 *{
     padding: 0;
     margin: 0;
+    box-sizing: border-box;
 }
 
 .meetVideoContainer{
     position: relative;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.922);
+    background-color: #1a1a1a;
+    overflow: hidden;
 }
 
 .meetVideoContainer > .meetUserVideo{
     position: absolute;
-    bottom: 10vh;
-    height: 30vh;
+    bottom: 80px;
+    height: 150px;
     width: auto;
-    right: 0;
-    border-radius: 20px;
+    right: 20px;
+    border-radius: 12px;
+    border: 2px solid #333;
+    z-index: 10;
 }
 
 .btnContainers{
     position: absolute;
-    width: 100vw;
+    width: 100%;
     bottom: 0;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
 }
-.btnContainers svg {
-    font-size: 2.5rem;
-}
-.conferenceView{
 
+.btnContainers svg {
+    font-size: 1.8rem;
+}
+
+.conferenceView {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    padding-bottom: 100px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+}
+
+.conferenceView > div {
+    flex: 0 0 auto;
+}
+
+.conferenceView video {
+    width: 400px;
+    max-width: 45vw;
+    min-width: 250px;
+    border-radius: 12px;
+    background: #000;
+    display: block;
+}
+
+.conferenceView h2 {
+    display: none;
 }
