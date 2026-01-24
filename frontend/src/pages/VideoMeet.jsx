@@ -176,7 +176,7 @@ const VideoMeet = () => {
 
 
   useEffect(() => {
-    if (video && audio) {
+    if (video !== undefined && audio !== undefined) {
       getUserMedia();
     }
   }, [audio, video]);
@@ -317,6 +317,14 @@ const VideoMeet = () => {
     getMedia();
   }
 
+  let handleVideo = () =>{
+    setVideo(!video);
+  }
+
+  let handleAudio = () =>{
+    setAudio(!audio);
+  }
+
   // video & audio calls through getUserMedia()
   return (
     <div>
@@ -334,13 +342,13 @@ const VideoMeet = () => {
         <div className='meetVideoContainer'>
 
           <div className='btnContainers'>
-            <IconButton style={{color: "white"}}>
+            <IconButton onClick={handleVideo} style={{color: "white"}}>
               {video ? <VideocamIcon/> : <VideocamOffIcon/>}
             </IconButton>
             <IconButton style={{color: "red"}}>
               <CallEndIcon />
             </IconButton>
-            <IconButton style={{color: "white"}}>
+            <IconButton onClick={handleAudio} style={{color: "white"}}>
               {audio ? <MicIcon/>: <MicOffIcon/>}
             </IconButton>
 
@@ -360,23 +368,26 @@ const VideoMeet = () => {
 
           <video className='meetUserVideo' ref={localVideoRef} autoPlay muted></video>
           
-          {videos.map((video)=>(
-            <div className='conferenceView' key={video.socketId}>
-              <h2>{video.socketId}</h2>
+          <div className='conferenceView'>
+            {videos.map((video)=>(
+              <div key={video.socketId}>
+                <h2>{video.socketId}</h2>
 
-              <video
-                data-socket={video.socketId}
-                ref={ref=>{
-                  if(ref && video.stream){
-                    ref.srcObject = video.stream;
-                  }
-                }}
-                autoPlay
-                >
+                <video
+                
+                  data-socket={video.socketId}
+                  ref={ref=>{
+                    if(ref && video.stream){
+                      ref.srcObject = video.stream;
+                    }
+                  }}
+                  autoPlay
+                  >
 
-              </video>
-            </div>
-          ))}
+                </video>
+              </div>
+            ))}
+          </div>
         </div>
       }
     </div>
