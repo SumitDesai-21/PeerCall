@@ -16,7 +16,7 @@
     bottom: 80px;
     height: 150px;
     width: auto;
-    right: 20px;
+    left: 20px;
     border-radius: 12px;
     border: 2px solid #333;
     z-index: 10;
@@ -64,4 +64,69 @@
 
 .conferenceView h2 {
     display: none;
+}
+
+.chatRoom {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    bottom: 90px;
+    width: min(320px, 90vw);
+    background: rgba(30, 30, 30, 0.95);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    z-index: 20;
+}
+
+.chatRoom h1 {
+    color: #fff;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.chatHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chatContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.messagesArea {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+}
+
+.chattingArea {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: auto;
+}
+
+.chattingArea .MuiTextField-root {
+    flex: 1;
+}
+
+.chattingArea .MuiOutlinedInput-root {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.chattingArea .MuiOutlinedInput-root fieldset {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.chattingArea .MuiInputLabel-root {
+    color: rgba(255, 255, 255, 0.5);
 }
