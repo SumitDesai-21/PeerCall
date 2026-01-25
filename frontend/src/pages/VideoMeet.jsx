@@ -2,13 +2,15 @@ import React, { useEffect, useRef, useState } from 'react'
 import { io } from 'socket.io-client';
 import VideocamIcon from '@mui/icons-material/Videocam'
 import VideocamOffIcon from '@mui/icons-material/VideocamOff'
-import { IconButton, Button, Badge } from '@mui/material';
+import { IconButton, Button, Badge, TextField } from '@mui/material';
 import CallEndIcon from '@mui/icons-material/CallEnd'
 import MicIcon from '@mui/icons-material/Mic'
 import MicOffIcon from '@mui/icons-material/MicOff'
 import ScreenShareIcon from '@mui/icons-material/ScreenShare'
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare'
 import ChatIcon from '@mui/icons-material/Chat'
+import SendIcon from '@mui/icons-material/Send'
+import CloseIcon from '@mui/icons-material/Close'
 
 import '../styles/VideoComponent.css';
 // define URL server
@@ -33,7 +35,7 @@ const VideoMeet = () => {
   let [video, setVideo] = useState();
   let [audio, setAudio] = useState();
   let [screen, setScreen] = useState();
-  let [showModal, setModal] = useState();
+  let [showModal, setModal] = useState(true);
   let [screenAvailable, setScreenAvailable] = useState();
   let [messages, setMessages] = useState();
   let [message, setMessage] = useState("");
@@ -326,13 +328,6 @@ const VideoMeet = () => {
     getMedia();
   }
 
-  let handleVideo = () => {
-    setVideo(!video);
-  }
-
-  let handleAudio = () => {
-    setAudio(!audio);
-  }
 
   let getDisplayMediaSuccess = (stream) => {
     try {
@@ -406,15 +401,15 @@ const VideoMeet = () => {
     }
   }
 
+  let sendMessage = () =>{
+
+  }
+
   useEffect(() => {
     if (screen !== undefined) {
       getDisplayMedia();
     }
   }, [screen])
-
-  let handleScreen = () => {
-    setScreen(!screen);
-  }
 
   // video & audio calls through getUserMedia()
   return (
@@ -431,27 +426,44 @@ const VideoMeet = () => {
           </div>
         </div> :
         <div className='meetVideoContainer'>
-
+          {showModal ? <div className="chatRoom">
+            <div className="chatContainer">
+              <div className="chatHeader">
+                <h1>Chat</h1>
+                <IconButton onClick={() => setModal(false)} size="small" style={{ color: "gray" }}>
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </div>
+              
+              <div className="chattingArea">
+                <TextField size="small" placeholder="Enter message" variant="outlined" />
+                <IconButton onClick={sendMessage} style={{ color: "gray" }}>
+                  <SendIcon />
+                </IconButton>
+              </div>
+            </div>
+          </div> : <></>}
+           
           <div className='btnContainers'>
-            <IconButton onClick={handleVideo} style={{ color: "white" }}>
+            <IconButton onClick={() => setVideo(!video)} style={{ color: "white" }}>
               {video ? <VideocamIcon /> : <VideocamOffIcon />}
           </IconButton>
           <IconButton style={{ color: "red" }}>
             <CallEndIcon />
           </IconButton>
-          <IconButton onClick={handleAudio} style={{ color: "white" }}>
+          <IconButton onClick={() => setAudio(!audio)} style={{ color: "white" }}>
             {audio ? <MicIcon /> : <MicOffIcon />}
           </IconButton>
 
           {screenAvailable ?
-            <IconButton onClick={handleScreen} style={{ color: "white" }}>
+            <IconButton onClick={()=> setScreen(!screen)} style={{ color: "white" }}>
               {screen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
             </IconButton>
             : <></>
           }
 
           <Badge badgeContent={newMessages} max={999} color='secondary'>
-            <IconButton style={{ color: "white" }}>
+            <IconButton onClick={()=>setModal(!showModal)} style={{ color: "white" }}>
               <ChatIcon />
             </IconButton>
           </Badge>
