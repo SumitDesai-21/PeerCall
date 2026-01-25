@@ -24,8 +24,11 @@ const connectToSocket = (server) => {
 
             timeOnline[socket.id] = new Date();
 
-            // Notify others in the room
-            socket.to(roomId).emit("user-joined", socket.id);
+            // Get all clients in the room
+            const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
+
+            // Notify everyone urself too about the new user with client list
+            io.to(roomId).emit("user-joined", socket.id, clients);
 
             // Send previous chat messages to new user
             if (messages[roomId]) {
