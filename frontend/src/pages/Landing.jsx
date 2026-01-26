@@ -1,6 +1,6 @@
 import React from 'react';
 import '../styles/Home.css';
-import mobileImg from '../assets/mobilecall.png';
+import mobileImg from '../assets/call.png';
 import videoIcon from '../assets/video.png';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -26,8 +26,8 @@ const Landing = () => {
             <span className='accent'>everyone, everywhere.</span>
           </h1>
           <p className='heroSubtitle'>
-            Experience clear video quality and seamless connection. 
-            Bridging the gap between you and your loved ones, one call at a time.
+            Simple, reliable video calling for everyone. 
+            Stay connected with the people who matter most, wherever they are.
           </p>
           <div className="ctaGroup">
             <Link className='btn' to={'/auth'}>Get Started</Link>
