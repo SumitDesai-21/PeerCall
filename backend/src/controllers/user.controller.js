@@ -48,7 +48,7 @@ const login = async (req, res) => {
     // compare login password & actual password matches or not
     if(await bcrypt.compare(password, user.password)){
         const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d'});
-        return res.status(httpStatus.OK).json({token: token});
+        return res.status(httpStatus.OK).json({token: token, name: user.name});
     }
     else{
         return res.status(httpStatus.UNAUTHORIZED).json({message: "Invalid credentials"});
