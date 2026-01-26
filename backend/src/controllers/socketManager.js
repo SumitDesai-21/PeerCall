@@ -57,6 +57,14 @@ const connectToSocket = (server) => {
             });
 
             io.to(roomId).emit("chat-message", message, sender, socket.id);
+            console.log(sender+ ": "+ message);
+        });
+
+        // Video state change
+        socket.on("video-state", (videoState) => {
+            socket.rooms.forEach(roomId => {
+                socket.to(roomId).emit("video-state", socket.id, videoState);
+            });
         });
 
         // Handle disconnect
