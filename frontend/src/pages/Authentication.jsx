@@ -132,7 +132,7 @@ export default function Authentication() {
                             <Box component="form" onSubmit={handleSubmit}>
                                 {tabValue === 1 && (
                                     <TextField
-                                        label="Full Name"
+                                        label="Name"
                                         fullWidth
                                         margin="normal"
                                         value={name}
