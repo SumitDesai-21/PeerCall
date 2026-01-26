@@ -16,7 +16,7 @@ app.use(express.urlencoded({extended: true}));
 let port = process.env.PORT || 8080;
 /*
 Create HTTP server with Express inside it
-Socket.io needs the raw HTTP server to attach WebSocket functionality */
+Socket.io needs raw HTTP server to attach WebSocket functionality */
 const server = createServer(app);
 
 /* 
@@ -25,7 +25,7 @@ This allows both HTTP requests and WebSocket connections on same port */
 const io = connectToSocket(server);
 
 
-// use routes 
+// user routes 
 app.use('/api/users', userRoutes);
 
 
