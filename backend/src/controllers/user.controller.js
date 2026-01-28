@@ -2,6 +2,8 @@ import { User } from "../models/user.model.js";
 import httpStatus from "http-status";
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
+import { Meeting } from "../models/meeting.model.js";
+// Removed unused import 'cache' from 'react'
 // register controller
 const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -58,4 +60,47 @@ const login = async (req, res) => {
   }
 };
 
-export { register, login };
+
+// implement history feature
+const getUserHistory = async (req, res) => {
+  const { token } = req.query;
+  if (!token) {
+    return res.status(400).json({ message: "Token is required" });
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const user = await User.findOne({ email: decoded.email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const meetings = await Meeting.find({ user_id: user.email });
+    return res.status(200).json(meetings);
+  } catch (e) {
+    return res.status(401).json({ message: `Invalid or expired token: ${e}` });
+  }
+};
+
+
+const addToHistory = async (req, res) => {
+  const { token, meeting_code } = req.body;
+  if (!token || !meeting_code) {
+    return res.status(400).json({ message: "Token and meeting_code are required" });
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const user = await User.findOne({ email: decoded.email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const newMeeting = new Meeting({
+      user_id: user.email,
+      meetingCode: meeting_code
+    });
+    await newMeeting.save();
+    return res.status(httpStatus.CREATED).json({ message: "Added code to history" });
+  } catch (e) {
+    return res.status(401).json({ message: `Invalid or expired token: ${e}` });
+  }
+};
+
+export { register, login, getUserHistory, addToHistory };
