@@ -77,5 +77,6 @@ const Home = () => {
     </div>
   )
 }
- 
+
+
 export default withAuth(Home);
