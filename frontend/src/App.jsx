@@ -1,12 +1,10 @@
-import React from 'react'
 import { Routes, Route, BrowserRouter } from 'react-router-dom'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 import Landing from './pages/Landing'
 import Authentication from './pages/Authentication'
-import { AuthProvider } from './contexts/AuthContext'
 import VideoMeet from './pages/VideoMeet'
 import Home from './pages/Home'
+import { AuthProvider } from './contexts/AuthContext'
+import History from './pages/History'
 
 const App = () => {
   return (
@@ -18,10 +16,10 @@ const App = () => {
             <Route path='/auth' element={<Authentication />}></Route>
             <Route path='/home' element={<Home/>}></Route>
             <Route path='/:url' element={<VideoMeet/>}></Route>
+            <Route path='/history' element={<History/>}></Route>
           </Routes>
         </AuthProvider>
       </BrowserRouter>
-      <ToastContainer position="top-right" autoClose={4000} hideProgressBar={false} />
     </div>
   )
 }
