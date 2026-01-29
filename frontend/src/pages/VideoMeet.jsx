@@ -188,56 +188,8 @@ const VideoMeet = () => {
         } catch (error) {
           console.log(error);
         }
-
-        // TODO BlackSilence
-        let blackSilence = (...args) => new MediaStream([blackScreen(...args), silence()]);
-        window.localStream = blackSilence(); // my fix: call function
-        localVideoRef.current.srcObject = window.localStream;
-
-        for (let id in connections) {
-          // using addTrack (no addStream)
-          window.localStream.getTracks().forEach(track => {
-            connections[id].addTrack(track, window.localStream);
-          });
-
-          if (connections[id].signalingState === "stable") {
-            connections[id]
-              .createOffer()
-              .then((description) => {
-                connections[id]
-                  .setLocalDescription(description)
-                  .then(() => {
-                    socketRef.current.emit(
-                      'signal',
-                      id,
-                      JSON.stringify({ sdp: connections[id].localDescription })
-                    );
-                  })
-                  .catch(e => console.log(e));
-              })
-              .catch(e => console.log(e));
-          }
-        }
       };
     });
-  };
-
-  let silence = () => {
-    let context = new AudioContext();
-    let oscillator = context.createOscillator();
-
-    let destination = oscillator.connect(context.createMediaStreamDestination());
-    oscillator.start();
-    context.resume();
-    return Object.assign(destination.stream.getAudioTracks()[0], { enabled: false });
-  };
-
-  let blackScreen = ({ width = 640, height = 480 } = {}) => {
-    let canvas = Object.assign(document.createElement('canvas'), { width, height });
-    canvas.getContext('2d').fillRect(0, 0, width, height);
-    let stream = canvas.captureStream();
-
-    return Object.assign(stream.getVideoTracks()[0], { enabled: false });
   };
 
   // getUserMedia
@@ -431,15 +383,6 @@ const VideoMeet = () => {
             window.localStream.getTracks().forEach(track => {
               connections[socketListId].addTrack(track, window.localStream);
             });
-          } else {
-            // Todo black silence 
-            let blackSilence = (...args) =>
-              new MediaStream([blackScreen(...args), silence()]);
-            window.localStream = blackSilence(); // my fix: call function
-
-            window.localStream.getTracks().forEach(track => {
-              connections[socketListId].addTrack(track, window.localStream);
-            });
           }
         });
 
@@ -552,12 +495,6 @@ const VideoMeet = () => {
           console.log(error);
         }
 
-        // TODO BlackSilence
-        let blackSilence = (...args) =>
-          new MediaStream([blackScreen(...args), silence()]);
-        window.localStream = blackSilence(); // my fix
-        localVideoRef.current.srcObject = window.localStream;
-
         getUserMedia();
       };
     });
@@ -586,11 +523,6 @@ const VideoMeet = () => {
           .getUserMedia({ video, audio })
           .then(getUserMediaSuccess)
           .catch(e => console.log(e));
-      } else {
-        let blackSilence = (...args) =>
-          new MediaStream([blackScreen(...args), silence()]);
-        window.localStream = blackSilence(); // my fix
-        localVideoRef.current.srcObject = window.localStream;
       }
     }
   };
@@ -706,6 +638,7 @@ const VideoMeet = () => {
             <button
               className={`controlButton ${video ? 'active' : 'inactive'}`}
               onClick={() => setVideo(!video)}
+              disabled ={!videoAvailable}
             >
               {video ? <VideocamIcon /> : <VideocamOffIcon />}
             </button>
@@ -717,6 +650,7 @@ const VideoMeet = () => {
             <button
               className={`controlButton ${audio ? 'active' : 'inactive'}`}
               onClick={() => setAudio(!audio)}
+              disabled={!audioAvailable}
             >
               {audio ? <MicIcon /> : <MicOffIcon />}
             </button>
