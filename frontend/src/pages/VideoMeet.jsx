@@ -356,7 +356,6 @@ const VideoMeet = () => {
         );
       });
 
-
       socketRef.current.on('video-state', (id, videoState) => {
         setVideos((videos) =>
           videos.map((v) =>
