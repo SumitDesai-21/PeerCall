@@ -7,13 +7,10 @@ import Typography from '@mui/material/Typography';
 import { IconButton } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home'
 
-
 const History = () => {
 
     const { getHistoryOfUser } = useContext(AuthContext);
     const [meetings, setMeetings] = useState([]); // list 
-
-
 
     const navigate = useNavigate();
     useEffect(() => {
