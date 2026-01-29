@@ -1,11 +1,17 @@
-import React from 'react';
-import '../styles/Home.css';
 import mobileImg from '../assets/call.png';
 import videoIcon from '../assets/video.png';
 import { Link, useNavigate } from 'react-router-dom';
+import '../styles/Landing.css';
 
 const Landing = () => {
   const navigate = useNavigate();
+  const handleGuestJoin = () => {
+  const code = prompt("Enter meeting code");
+  if (code && code.trim() !== "") {
+    navigate(`/${code.trim()}`);
+  }
+  };
+
   return (
     <div className='landingPageContainer'>
       <nav>
@@ -14,7 +20,7 @@ const Landing = () => {
           <h2>Peer<span>Call</span></h2>
         </div>
         <div className='navlist'>
-          <span className="navLink">Join As Guest</span>
+          <button onClick={handleGuestJoin} style={{border: '0px'}} className='navLink'>Join As Guest</button>
           <button onClick={() => navigate('/auth')} className='loginBtn'>Login</button>
         </div>
       </nav>

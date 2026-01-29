@@ -12,7 +12,6 @@ const withAuth = (WrappedComponent) => {
             return false;
         }
 
-
         useEffect(()=>{
             if(!isAuthenticated()){
                 router('/auth');

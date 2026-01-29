@@ -125,7 +125,7 @@ const VideoMeet = () => {
         window.localStream.getTracks().forEach(track => track.stop());
       }
 
-      // Close all peer connections (my fix: remove handlers to avoid memory leaks)
+      // Close all peer connections, remove handlers to avoid memory leaks
       for (let key in connections) {
         connections[key].ontrack = null;
         connections[key].onicecandidate = null;
