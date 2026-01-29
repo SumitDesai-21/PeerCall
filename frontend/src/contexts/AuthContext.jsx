@@ -1,5 +1,4 @@
 // setting up context API & creating auth flow
-
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import httpStatus from 'http-status';
@@ -12,11 +11,11 @@ const client = axios.create({
 })
 export default AuthContext;
 
-export const AuthProvider = ({ children }) =>{
+export const AuthProvider = ({ children }) => {
     const [userData, setUserData] = useState(null);
     const router = useNavigate();
-    
-    const handleRegister = async (name, email, password) =>{
+
+    const handleRegister = async (name, email, password) => {
         try {
             let request = await client.post('/register', {
                 name: name,
@@ -24,7 +23,7 @@ export const AuthProvider = ({ children }) =>{
                 password: password
             })
 
-            if(request.status === httpStatus.CREATED){
+            if (request.status === httpStatus.CREATED) {
                 return request.data.message;
             }
         } catch (error) {
@@ -33,14 +32,14 @@ export const AuthProvider = ({ children }) =>{
     }
 
     // handle login here
-    const handleLogin = async (email, password) =>{
+    const handleLogin = async (email, password) => {
         try {
             let request = await client.post('/login', {
                 email: email,
                 password: password
             })
 
-            if(request.status === httpStatus.OK){
+            if (request.status === httpStatus.OK) {
                 localStorage.setItem("token", request.data.token);
                 localStorage.setItem("name", request.data.name);
                 router("/home");
@@ -50,13 +49,39 @@ export const AuthProvider = ({ children }) =>{
         }
     }
 
-    const data = {
-        userData, setUserData, handleRegister, handleLogin
+    // get history of users 
+    const getHistoryOfUser = async () => {
+        try {
+            let request = await client.get('/get_all_activity', {
+                params: {
+                    token: localStorage.getItem("token")
+                }
+            });
+            return request.data;
+        } catch (error) {
+            throw error;
+        }
     }
 
-    return (
-        <AuthContext.Provider value={data}>
-            {children}
-        </AuthContext.Provider>
-    )
+    const addToUserHistory = async (meetingCode) => {
+        try {
+            let request = await client.post("/add_to_activity", {
+                token: localStorage.getItem("token"),
+                meeting_code: meetingCode
+            });
+        return request
+    } catch (error) {
+        throw error;
+    }
+}
+
+const data = {
+    userData, setUserData, handleRegister, getHistoryOfUser, addToUserHistory, handleLogin
+}
+
+return (
+    <AuthContext.Provider value={data}>
+        {children}
+    </AuthContext.Provider>
+)
 }
