@@ -34,6 +34,8 @@ export const AuthProvider = ({ children }) => {
     // handle login here
     const handleLogin = async (email, password) => {
         try {
+            localStorage.removeItem("token");
+            localStorage.removeItem("name");
             let request = await client.post('/login', {
                 email: email,
                 password: password
@@ -69,19 +71,26 @@ export const AuthProvider = ({ children }) => {
                 token: localStorage.getItem("token"),
                 meeting_code: meetingCode
             });
-        return request
-    } catch (error) {
-        throw error;
+            return request
+        } catch (error) {
+            throw error;
+        }
     }
-}
 
-const data = {
-    userData, setUserData, handleRegister, getHistoryOfUser, addToUserHistory, handleLogin
-}
+    const logout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("name");
+        setUserData(null);
+        router("/auth");
+    };
 
-return (
-    <AuthContext.Provider value={data}>
-        {children}
-    </AuthContext.Provider>
-)
+    const data = {
+        userData, setUserData, handleRegister, getHistoryOfUser, addToUserHistory, handleLogin, logout
+    }
+
+    return (
+        <AuthContext.Provider value={data}>
+            {children}
+        </AuthContext.Provider>
+    )
 }
