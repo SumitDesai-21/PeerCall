@@ -31,6 +31,12 @@ const History = () => {
         return date.toLocaleDateString("en-GB");
     };
 
+    // Format time in IST i.e Indian Standard Time
+    const formatTimeIST = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    };
+
     return (
         <div>
             {/* use card from material UI */}
@@ -44,11 +50,14 @@ const History = () => {
                     return (
                         <Card key={i} variant="outlined">
                             <CardContent>
-                                <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
+                                <Typography gutterBottom sx={{ color: 'text.secondary', mb: 1.5 }}>
                                     Meeting Code: {e.meetingCode}
                                 </Typography>
                                 <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
                                     Date: {formatDate(e.date)}
+                                </Typography>
+                                <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
+                                    Time: {formatTimeIST(e.date)}
                                 </Typography>
                             </CardContent>
                         </Card>
