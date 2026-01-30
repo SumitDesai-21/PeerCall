@@ -1,10 +1,13 @@
 import { useState, useContext } from "react";
 import {
     Box, Button, Card, CardContent, TextField, Typography, Tab, Tabs, Alert, CircularProgress, Container, CssBaseline,
+    IconButton
 } from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { createTheme, duration, ThemeProvider } from "@mui/material/styles";
 import VideocamIcon from "@mui/icons-material/Videocam";
+import HomeIcon from "@mui/icons-material/Home";
 import AuthContext from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const theme = createTheme({
     palette: {
@@ -15,6 +18,7 @@ const theme = createTheme({
 });
 
 export default function Authentication() {
+    const navigate = useNavigate();
     const [tabValue, setTabValue] = useState(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -59,9 +63,15 @@ export default function Authentication() {
             setLoading(false);
         }
     };
-
     return (
         <ThemeProvider theme={theme}>
+
+            <IconButton onClick={() => {
+                navigate('/');
+            }}>
+                <HomeIcon /> <span style={{ fontSize: "1rem", color: "#555", paddingLeft: "5px", paddingTop: "3px" }}>Home</span>
+            </IconButton>
+
             <CssBaseline />
             <Box
                 sx={{
