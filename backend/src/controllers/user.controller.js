@@ -73,7 +73,7 @@ const getUserHistory = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const meetings = await Meeting.find({ user_id: user.email });
+    const meetings = await Meeting.find({ email_id: user.email });
     return res.status(200).json(meetings);
   } catch (e) {
     return res.status(401).json({ message: `Invalid or expired token: ${e}` });
@@ -93,7 +93,7 @@ const addToHistory = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     const newMeeting = new Meeting({
-      user_id: user.email,
+      email_id: user.email,
       meetingCode: meeting_code
     });
     await newMeeting.save();
