@@ -11,7 +11,7 @@ import "../styles/Home.css";
 const Home = () => {
   let navigate = useNavigate();
   const [meetingCode, setMeetingCode]  = useState("");
-  const {addToUserHistory} = useContext(AuthContext);
+  const {addToUserHistory, logout} = useContext(AuthContext);
   let handleJoinVideoCall = async() =>{
     await addToUserHistory(meetingCode);
     navigate(`/${meetingCode}`);
@@ -38,8 +38,7 @@ const Home = () => {
             onClick={()=>{
               const prompt = confirm("Are you sure you want to logout ?");
               if(prompt){
-                localStorage.removeItem("token");
-                navigate("/auth");
+                logout();
               }
             }}>
             Logout
