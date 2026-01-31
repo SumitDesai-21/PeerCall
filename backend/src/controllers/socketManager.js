@@ -3,7 +3,6 @@ import { verifyToken } from "../middlewares/auth.middleware.js";
 // this file handles real time features like joining calls, chat, webRTC signaling, leaving calls
 
 const messages = {};
-const timeOnline = {};
 
 const connectToSocket = (server) => {
   const io = new Server(server, {
@@ -19,9 +18,9 @@ const connectToSocket = (server) => {
 
     // Join a meeting room
     socket.on("join-call", (roomId) => {
+      if (!roomId) return; // edge case 
+      // else join 
       socket.join(roomId);
-
-      timeOnline[socket.id] = new Date();
 
       // Get all clients in the room
       const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
@@ -70,12 +69,6 @@ const connectToSocket = (server) => {
     socket.on("disconnect", () => {
       console.log("User disconnected:", socket.id);
 
-      const joinedAt = timeOnline[socket.id];
-      if (joinedAt) {
-        const duration = Math.abs(new Date() - joinedAt);
-        console.log("Time online:", duration);
-      }
-
       // Notify every room except the room with the same ID as the socket
       socket.rooms.forEach((roomId) => {
         if (roomId !== socket.id) {
@@ -88,8 +81,6 @@ const connectToSocket = (server) => {
           }
         }
       });
-
-      delete timeOnline[socket.id];
     });
   });
 
