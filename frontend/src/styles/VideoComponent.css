@@ -1,7 +1,6 @@
 * {
   padding: 0;
   margin: 0;
-  box-sizing: border-box;
 }
 
 .lobbyContainer {
@@ -58,7 +57,7 @@
 }
 
 .lobbyInput {
-  width: 100%;
+  width: 93%;
   padding: 14px 16px;
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -381,4 +380,69 @@
   align-items: center;
   justify-content: center;
   padding: 0 4px;
+}
+
+
+
+/* media queries for responsiveness */
+@media (max-width: 768px) {
+
+  /* Lobby */
+  .lobbyCard {
+    padding: 24px 20px;
+  }
+
+  .lobbyInput {
+    width: 87%;
+  }
+
+  .lobbyTitle {
+    font-size: 1.5rem;
+  }
+
+  .lobbySubtitle {
+    margin-bottom: 24px;
+  }
+
+  /* Control bar */
+  .controlBar {
+    padding: 16px;
+    gap: 10px;
+  }
+
+  .controlButton {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Local video preview */
+  .localVideo {
+    width: 160px;
+    height: 120px;
+    bottom: 90px;
+    left: 12px;
+  }
+
+  /* Remote videos */
+  .remoteVideoCard {
+    width: 100%;
+    max-width: 340px;
+    height: 240px;
+  }
+
+  .videosGrid {
+    padding: 16px;
+    padding-bottom: 120px;
+    gap: 12px;
+  }
+
+  /* Chat panel */
+  .chatPanel {
+    width: 95vw;
+    right: 8px;
+    left: 8px;
+    top: auto;
+    bottom: 90px;
+    margin: 0 auto;
+  }
 }

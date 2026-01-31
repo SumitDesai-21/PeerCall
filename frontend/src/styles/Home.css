@@ -1,9 +1,8 @@
 *{
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
-body, html {
+body {
   margin: 0;
   padding: 0;
   font-family: 'Inter', 'Roboto', Arial, sans-serif;
@@ -63,4 +62,35 @@ body, html {
   width: 30vw;
   height: auto;
   border-radius: 20px;
+}
+
+
+/* media queries for responsiveness */
+@media (max-width: 768px) {
+  .navBar {
+    padding: 14px 16px;
+  }
+
+  .meetContainer {
+    flex-direction: column;
+    padding: 24px 16px;
+    gap: 24px;
+    text-align: center;
+  }
+
+  .leftPanel {
+    justify-content: center;
+  }
+
+  .meetCard {
+    min-width: 100%;
+    max-width: 100%;
+    padding: 24px 20px;
+    align-items: center;
+  }
+
+  .rightPanel > img {
+    width: 80vw;
+    max-width: 320px;
+  }
 }
