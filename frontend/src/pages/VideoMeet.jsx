@@ -633,7 +633,7 @@ const VideoMeet = () => {
             </div>
           )}
 
-          {/* Control Bar */}
+          {/* Control Bar means control buttons section */}
           <div className="controlBar">
             <button
               className={`controlButton ${video ? 'active' : 'inactive'}`}
