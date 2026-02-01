@@ -17,8 +17,10 @@ import defaultAvatar from '../assets/image.png'
 import '../styles/VideoComponent.css';
 
 // define URL server
-const server_url = "http://localhost:8080"; // backend server
-var connections = {};
+const server_url = import.meta.env.VITE_SERVER_URL; // backend server
+
+// Use useRef instead of global var
+// var connections = {}; 
 
 // used stun server from public STUN server list
 const peerConfigConnections = {
@@ -31,11 +33,14 @@ const peerConfigConnections = {
 const VideoMeet = () => {
   const navigate = useNavigate();
 
+  const roomId = window.location.pathname;
+
   // refs
   const socketRef = useRef();
   let socketIdRef = useRef();
   let localVideoRef = useRef();
-  const videoRef = useRef([]);
+  // Store connections in a ref so they persist correctly across renders
+  const connectionsRef = useRef({}); 
 
   // states
   let [videoAvailable, setVideoAvailable] = useState(true);
@@ -112,11 +117,6 @@ const VideoMeet = () => {
     // cleanup function when user leaves the call
     return () => {
       if (socketRef.current) {
-        socketRef.current.off('signal', gotMessageFromServer);
-        socketRef.current.off('chat-message', addMessage);
-        socketRef.current.off('user-left');
-        socketRef.current.off('user-joined');
-        socketRef.current.off('video-state');
         socketRef.current.disconnect();
       }
 
@@ -126,13 +126,13 @@ const VideoMeet = () => {
       }
 
       // Close all peer connections, remove handlers to avoid memory leaks
-      for (let key in connections) {
-        connections[key].ontrack = null;
-        connections[key].onicecandidate = null;
-        connections[key].close();
-      }
-
-      connections = {}; // Reset global object
+      // Iterate over ref.current
+      Object.values(connectionsRef.current).forEach(pc => {
+          pc.ontrack = null;
+          pc.onicecandidate = null;
+          pc.close();
+      });
+      connectionsRef.current = {}; // Reset ref object
     };
   }, []);
 
@@ -147,28 +147,29 @@ const VideoMeet = () => {
     window.localStream = stream;
     localVideoRef.current.srcObject = stream;
 
-    for (let id in connections) {
+    // Iterate over connectionsRef.current
+    for (let id in connectionsRef.current) {
       if (id === socketIdRef.current) continue;
 
       if (window.localStream) {
         // using addTrack instead of deprecated addStream
         window.localStream.getTracks().forEach(track => {
-          connections[id].addTrack(track, window.localStream);
+          connectionsRef.current[id].addTrack(track, window.localStream);
         });
       }
 
       // prevent offer spam with signalingState check
-      if (connections[id].signalingState === "stable") {
-        connections[id]
+      if (connectionsRef.current[id].signalingState === "stable") {
+        connectionsRef.current[id]
           .createOffer()
           .then((description) => {
-            connections[id]
+            connectionsRef.current[id]
               .setLocalDescription(description)
               .then(() => {
                 socketRef.current.emit(
                   "signal",
                   id,
-                  JSON.stringify({ sdp: connections[id].localDescription })
+                  JSON.stringify({ sdp: connectionsRef.current[id].localDescription })
                 );
               })
               .catch(e => console.log(e));
@@ -230,23 +231,24 @@ const VideoMeet = () => {
   // important function 
   let gotMessageFromServer = (fromId, message) => {
     var signal = JSON.parse(message);
+    //Ensure ID is string for lookup
+    const fromIdString = String(fromId);
 
-    if (fromId !== socketIdRef.current) {
+    if (fromIdString !== String(socketIdRef.current) && connectionsRef.current[fromIdString]) {
+      const pc = connectionsRef.current[fromIdString];
+
       if (signal.sdp) {
-        connections[fromId]
-          .setRemoteDescription(new RTCSessionDescription(signal.sdp))
+        pc.setRemoteDescription(new RTCSessionDescription(signal.sdp))
           .then(() => {
             if (signal.sdp.type === 'offer') {
-              connections[fromId]
-                .createAnswer()
+              pc.createAnswer()
                 .then((description) => {
-                  connections[fromId]
-                    .setLocalDescription(description)
+                  pc.setLocalDescription(description)
                     .then(() => {
                       socketRef.current.emit(
                         "signal",
                         fromId,
-                        JSON.stringify({ sdp: connections[fromId].localDescription })
+                        JSON.stringify({ sdp: pc.localDescription })
                       );
                     })
                     .catch(e => console.log(e));
@@ -258,11 +260,12 @@ const VideoMeet = () => {
       }
 
       // add ICE candidate only if remoteDescription is set
-      if (signal.ice && connections[fromId]?.remoteDescription) {
-        connections[fromId].addIceCandidate(signal.ice).catch(console.log);
+      if (signal.ice && pc.remoteDescription) {
+        pc.addIceCandidate(signal.ice).catch(console.log);
       }
     }
   };
+
   // TODO addMessage 
   let addMessage = (data, sender, socketIdSender) => {
     setMessages((prevMessages) => [
@@ -285,27 +288,29 @@ const VideoMeet = () => {
     socketRef.current.on('signal', gotMessageFromServer);
 
     socketRef.current.on('connect', () => {
-      socketRef.current.emit('join-call', window.location.href);
+      socketRef.current.emit('join-call', roomId, username);
       socketIdRef.current = socketRef.current.id;
 
       socketRef.current.on('chat-message', addMessage);
 
-      socketRef.current.on('user-left', (id) => {
+      // Robust user-left handling
+      socketRef.current.on('user-left', (data) => {
+        let socketId = data;
+        if (typeof data === 'object' && data !== null && data.socketId) {
+            socketId = data.socketId;
+        }
+        const targetId = String(socketId);
+
         // Close and delete peer connection
-        if (connections[id]) {
-          connections[id].ontrack = null;
-          connections[id].onicecandidate = null;
-          connections[id].close();
-          delete connections[id];
+        if (connectionsRef.current[targetId]) {
+          connectionsRef.current[targetId].ontrack = null;
+          connectionsRef.current[targetId].onicecandidate = null;
+          connectionsRef.current[targetId].close();
+          delete connectionsRef.current[targetId];
         }
 
         // Remove video from UI
-        setVideos((videos) => videos.filter((video) => video.socketId !== id));
-
-        // Keep refs in sync
-        videoRef.current = videoRef.current.filter(
-          (video) => video.socketId !== id
-        );
+        setVideos((videos) => videos.filter((video) => String(video.socketId) !== targetId));
       });
 
       socketRef.current.on('video-state', (id, videoState) => {
@@ -319,101 +324,85 @@ const VideoMeet = () => {
       socketRef.current.on('user-joined', (id, clients) => {
         if (!clients) return;
 
-        clients.forEach((socketListId) => {
-          if (connections[socketListId]) return; // Skip if already connected
+        clients.forEach(({ socketId, name }) => {
+          const targetId = String(socketId);
+          if (connectionsRef.current[targetId]) return; // Skip if already connected
 
           // Creating our Peer Connection here
-          connections[socketListId] = new RTCPeerConnection(peerConfigConnections);
+          const pc = new RTCPeerConnection(peerConfigConnections);
+          connectionsRef.current[targetId] = pc;
 
-          connections[socketListId].onicecandidate = (event) => {
+          pc.onicecandidate = (event) => {
             if (event.candidate) {
               socketRef.current.emit(
                 'signal',
-                socketListId,
+                targetId,
                 JSON.stringify({ ice: event.candidate })
               );
             }
           };
 
           // using ontrack instead of deprecated onaddstream
-          connections[socketListId].ontrack = (event) => {
+          pc.ontrack = (event) => {
             const remoteStream = event.streams[0];
 
-            const existsInState = videos.find(v => v.socketId === socketListId);
-            const existsInRef = videoRef.current.find(v => v.socketId === socketListId);
-
-            if (existsInState || existsInRef) {
-              setVideos(prevVideos =>
-                prevVideos.map(v =>
-                  v.socketId === socketListId
-                    ? { ...v, stream: remoteStream }
-                    : v
-                )
-              );
-
-              videoRef.current = videoRef.current.map(v =>
-                v.socketId === socketListId
-                  ? { ...v, stream: remoteStream }
-                  : v
-              );
-            } else {
-              let newVideo = {
-                socketId: socketListId,
-                stream: remoteStream,
-                autoPlay: true,
-                playsinline: true,
-                videoOn: true
-              };
-
-              setVideos(prevVideos => {
-                const alreadyExists = prevVideos.some(v => v.socketId === socketListId);
-                if (alreadyExists) {
-                  return prevVideos;
-                }
-
-                const updated = [...prevVideos, newVideo];
-                videoRef.current = updated;
-                return updated;
-              });
-            }
+            setVideos(prevVideos => {
+              // Check for duplicates using string comparison
+              const exists = prevVideos.find(v => String(v.socketId) === targetId);
+              
+              if (exists) {
+                  return prevVideos.map(v => 
+                      String(v.socketId) === targetId ? { ...v, stream: remoteStream } : v
+                  );
+              } else {
+                  return [...prevVideos, {
+                      socketId: targetId,
+                      name: name || "User", // if no name say user
+                      stream: remoteStream,
+                      autoPlay: true,
+                      playsinline: true,
+                      videoOn: true
+                  }];
+              }
+            });
           };
 
           // add our local tracks to the new peer (my fix: using addTrack)
           if (window.localStream) {
             window.localStream.getTracks().forEach(track => {
-              connections[socketListId].addTrack(track, window.localStream);
+              pc.addTrack(track, window.localStream);
             });
           }
         });
 
         // if we are the new user, send offers to existing peers
         if (id === socketIdRef.current) {
-          for (let id2 in connections) {
+          for (let id2 in connectionsRef.current) {
             if (id2 === socketIdRef.current) continue;
 
             if (window.localStream) {
               try {
                 // using addTrack instead of old addStream
                 window.localStream.getTracks().forEach(track => {
-                  connections[id2].addTrack(track, window.localStream);
+                  connectionsRef.current[id2].addTrack(track, window.localStream);
                 });
               } catch (error) { }
             }
 
             // avoid offer spam with signalingState stable check
             // (pc.signalingState === "stable")
-            if (connections[id2].signalingState === "stable") {
-              connections[id2]
+            if (connectionsRef.current[id2].signalingState === "stable") {
+              connectionsRef.current[id2]
                 .createOffer()
                 .then((description) => {
-                  connections[id2]
+                  connectionsRef.current[id2]
                     .setLocalDescription(description)
                     .then(() => {
                       socketRef.current.emit(
                         "signal",
                         id2,
                         JSON.stringify({
-                          sdp: connections[id2].localDescription
+                          sdp: connectionsRef.current[id2].localDescription
                         })
                       );
                     })
@@ -453,28 +442,28 @@ const VideoMeet = () => {
     window.localStream = stream;
     localVideoRef.current.srcObject = stream;
 
-    for (let id in connections) {
+    for (let id in connectionsRef.current) {
       if (id === socketIdRef.current) continue;
 
       if (window.localStream) {
         // using addTrack for screen stream
         window.localStream.getTracks().forEach(track => {
-          connections[id].addTrack(track, window.localStream);
+          connectionsRef.current[id].addTrack(track, window.localStream);
         });
       }
 
-      if (connections[id].signalingState === "stable") {
-        connections[id]
+      if (connectionsRef.current[id].signalingState === "stable") {
+        connectionsRef.current[id]
           .createOffer()
           .then((description) => {
-            connections[id]
+            connectionsRef.current[id]
               .setLocalDescription(description)
               .then(() => {
                 socketRef.current.emit(
                   "signal",
                   id,
                   JSON.stringify({
-                    sdp: connections[id].localDescription
+                    sdp: connectionsRef.current[id].localDescription
                   })
                 );
               })
@@ -530,7 +519,7 @@ const VideoMeet = () => {
   let sendMessage = () => {
     socketRef.current.emit(
       'chat-message',
-      window.location.href,
+      roomId,
       message,
       username
     );
@@ -638,7 +627,7 @@ const VideoMeet = () => {
             <button
               className={`controlButton ${video ? 'active' : 'inactive'}`}
               onClick={() => setVideo(!video)}
-              disabled ={!videoAvailable}
+              disabled={!videoAvailable}
             >
               {video ? <VideocamIcon /> : <VideocamOffIcon />}
             </button>
@@ -684,6 +673,7 @@ const VideoMeet = () => {
 
           {/* Local Video Preview */}
           <div className="localVideo">
+            <p className="userName">{username}</p>
             {!video && (
               <div className="avatarPlaceholder">
                 <img
@@ -705,6 +695,7 @@ const VideoMeet = () => {
           <div className="videosGrid">
             {videos.map((video) => (
               <div key={video.socketId} className="remoteVideoCard">
+                <p className="userName">{video.name}</p>
                 {!video.videoOn && (
                   <div className="avatarPlaceholder">
                     <img
@@ -716,9 +707,12 @@ const VideoMeet = () => {
                 )}
                 <video
                   data-socket={video.socketId}
+                  // Explicitly set srcObject...If stream is null set to null.
                   ref={(ref) => {
                     if (ref && video.stream && ref.srcObject !== video.stream) {
                       ref.srcObject = video.stream;
+                    } else if (ref && !video.stream) {
+                      ref.srcObject = null;
                     }
                   }}
                   autoPlay
