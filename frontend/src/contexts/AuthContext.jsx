@@ -7,7 +7,7 @@ import axios from "axios";
 const AuthContext = createContext({});
 
 const client = axios.create({
-    baseURL: "http://localhost:8080/api/users"
+    baseURL: import.meta.env.VITE_BASE_URL
 })
 export default AuthContext;
 
@@ -35,7 +35,6 @@ export const AuthProvider = ({ children }) => {
     const handleLogin = async (email, password) => {
         try {
             localStorage.removeItem("token");
-            localStorage.removeItem("name");
             let request = await client.post('/login', {
                 email: email,
                 password: password
@@ -43,7 +42,6 @@ export const AuthProvider = ({ children }) => {
 
             if (request.status === httpStatus.OK) {
                 localStorage.setItem("token", request.data.token);
-                localStorage.setItem("name", request.data.name);
                 router("/home");
             }
         } catch (error) {
@@ -79,7 +77,6 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem("token");
-        localStorage.removeItem("name");
         setUserData(null);
         router("/auth");
     };
