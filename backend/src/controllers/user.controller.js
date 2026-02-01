@@ -9,10 +9,16 @@ const register = async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
+    if (!name || !email || !password) {
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ message: "All fields are required." });
+    }
+
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res
-        .status(httpStatus.FOUND)
+        .status(409)
         .json({ message: "Email already registered" });
     }
 
