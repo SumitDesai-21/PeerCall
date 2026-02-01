@@ -3,7 +3,7 @@ import {
     Box, Button, Card, CardContent, TextField, Typography, Tab, Tabs, Alert, CircularProgress, Container, CssBaseline,
     IconButton
 } from "@mui/material";
-import { createTheme, duration, ThemeProvider } from "@mui/material/styles";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import HomeIcon from "@mui/icons-material/Home";
 import AuthContext from "../contexts/AuthContext";
