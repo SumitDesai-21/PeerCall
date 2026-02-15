@@ -3,7 +3,7 @@ import httpStatus from "http-status";
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import { Meeting } from "../models/meeting.model.js";
-// Removed unused import 'cache' from 'react'
+
 // register controller
 const register = async (req, res) => {
   const { name, email, password } = req.body;
