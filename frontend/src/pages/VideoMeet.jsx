@@ -20,8 +20,7 @@ import '../styles/VideoComponent.css';
 const server_url = import.meta.env.VITE_SERVER_URL; // backend server
 
 // Use useRef instead of global var
-// var connections = {}; 
-
+// var connections = {};
 // used stun server from public STUN server list
 const peerConfigConnections = {
   iceServers: [
