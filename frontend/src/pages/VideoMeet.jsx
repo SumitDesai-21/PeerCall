@@ -15,9 +15,9 @@ import SendIcon from '@mui/icons-material/Send'
 import CloseIcon from '@mui/icons-material/Close'
 import defaultAvatar from '../assets/image.png'
 import '../styles/VideoComponent.css';
-
+import server from '../environment';
 // define URL server
-const server_url = import.meta.env.VITE_SERVER_URL; // backend server
+const server_url = server.prod; // backend server
 
 // Use useRef instead of global var
 // var connections = {};
