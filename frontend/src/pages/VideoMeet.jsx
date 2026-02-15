@@ -16,8 +16,16 @@ import CloseIcon from '@mui/icons-material/Close'
 import defaultAvatar from '../assets/image.png'
 import '../styles/VideoComponent.css';
 import server from '../environment';
+
+const normalizeBaseUrl = (url) => {
+  if (!url) return "";
+  return String(url).replace(/\/+$/, "");
+};
+
 // define URL server
-const server_url = server.prod; // backend server
+const server_url =
+  normalizeBaseUrl(import.meta.env.VITE_SERVER_URL) ||
+  normalizeBaseUrl(server.dev); // backend server
 
 // Use useRef instead of global var
 // var connections = {};
