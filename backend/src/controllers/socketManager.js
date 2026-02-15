@@ -27,7 +27,7 @@ const connectToSocket = (server) => {
       // Get all clients in the room
       const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
 
-      // Notify everyone urself too about the new user with client list
+      // Notify everyone & urself too about the new user with client list
       const users = clients.map((id) => {
         const s = io.sockets.sockets.get(id);
         return {
@@ -42,7 +42,7 @@ const connectToSocket = (server) => {
       if (messages[roomId]) {
         messages[roomId].forEach((msg) => {
           socket.emit("chat-message", msg.message, msg.sender, msg.socketId);
-        });
+        }); 
       }
     });
 
@@ -69,7 +69,6 @@ const connectToSocket = (server) => {
       }
 
       io.to(roomId).emit("chat-message", message, sender, socket.id);
-      console.log(sender + ": " + message);
     });
 
     // Video state change
