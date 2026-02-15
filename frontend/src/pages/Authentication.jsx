@@ -57,7 +57,7 @@ export default function Authentication() {
             }
         } catch (err) {
             setError(
-                err.response?.data?.message || "Something went wrong. Please try again."
+                err.response?.data?.message || err.message || "Something went wrong. Please try again."
             );
         } finally {
             setLoading(false);
