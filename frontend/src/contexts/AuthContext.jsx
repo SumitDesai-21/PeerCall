@@ -11,7 +11,6 @@ const API_BASE_URL =
 
 const client = axios.create({
     baseURL: API_BASE_URL,
-    timeout: 20000,
 })
 export default AuthContext;
 
