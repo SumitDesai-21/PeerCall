@@ -1,1 +1,8 @@
-{}
+{
+	"name": "peercall",
+	"private": true,
+	"scripts": {
+		"build": "npm ci --prefix backend && npm ci --prefix frontend --include=dev && npm --prefix frontend run build",
+		"start": "npm --prefix backend start"
+	}
+}

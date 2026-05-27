@@ -21,8 +21,7 @@ The result is a small full‑stack project:
 
 - **Frontend:** React + Vite (UI + WebRTC in the browser)
 - **Backend:** Node.js + Express + Socket.IO (auth, signaling, chat, history)
-- **Database:** MongoDB (stores user accounts and meeting history)
-
+- **Database:** MongoDB (stores user accounts and meeting history)  
 ---
 
 ### What you can do with PeerCall
@@ -170,6 +169,13 @@ Now open the Vite URL shown in the terminal (usually `http://localhost:5173`).
 ---
 
 ### Scripts
+
+#### Root (`package.json`)
+
+Some deploy platforms (like Render) run build/start commands from the **repo root**.
+
+- `npm run build` => installs backend + frontend deps and builds the frontend into `frontend/build`
+- `npm start` => starts the backend server
 
 #### Backend (`backend/package.json`)
 
